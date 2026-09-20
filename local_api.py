@@ -63,3 +63,30 @@ def run(body:RunRequest):
     except HTTPException:raise
     except Exception as e:raise HTTPException(500,str(e))
     finally:lock.release()
+
+
+# Read-only proxy used by the local dashboard for the real OTrace trace/consent store.
+def proxy_otrace_get(path: str):
+    try:
+        r = requests.get(f"{OTRACE}/{path}", timeout=30)
+    except requests.RequestException as e:
+        raise HTTPException(503, f"OTrace service unavailable: {e}")
+    try:
+        payload = r.json()
+    except ValueError:
+        payload = {"detail": r.text}
+    if r.status_code >= 400:
+        raise HTTPException(r.status_code, payload.get("detail", payload) if isinstance(payload, dict) else payload)
+    return payload
+
+@app.get("/trace/search/")
+def proxy_trace_search():
+    return proxy_otrace_get("trace/search/")
+
+@app.get("/consents/{consent_id}/")
+def proxy_consent_by_id(consent_id: str):
+    return proxy_otrace_get(f"consents/{consent_id}/")
+
+@app.get("/consents/list/{user_name}/")
+def proxy_consent_list(user_name: str):
+    return proxy_otrace_get(f"consents/list/{user_name}/")
