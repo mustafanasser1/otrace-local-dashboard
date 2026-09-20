@@ -36,7 +36,7 @@ export interface SummaryResult {
  * Default backend base used when no `VITE_OTRACE_API_BASE` is injected:
  * the user's local FastAPI/OTrace service.
  */
-export const DEFAULT_API_BASE = "http://127.0.0.1:8080";
+export const DEFAULT_API_BASE = "http://127.0.0.1:8090";
 
 const ENV_API_BASE = (import.meta.env["VITE_OTRACE_API_BASE"] as string | undefined)?.trim();
 
