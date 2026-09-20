@@ -1,0 +1,217 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * OTrace-FL Research Prototype — design system.
+ *
+ * Academic research dashboard: dark navy fixed sidebar, light neutral content
+ * surface, restrained blue / orange / green accents. All colors are oklch and
+ * exposed as semantic tokens; components must never hardcode raw colors.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  /* research accents */
+  --color-fl: var(--fl);
+  --color-fl-foreground: var(--fl-foreground);
+  --color-fl-soft: var(--fl-soft);
+  --color-otrace: var(--otrace);
+  --color-otrace-foreground: var(--otrace-foreground);
+  --color-otrace-soft: var(--otrace-soft);
+  --color-verified: var(--verified);
+  --color-verified-foreground: var(--verified-foreground);
+  --color-verified-soft: var(--verified-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --shadow-panel: 0 1px 2px oklch(0.2 0.04 258 / 0.06), 0 4px 16px oklch(0.2 0.04 258 / 0.05);
+  --shadow-raised: 0 2px 4px oklch(0.2 0.04 258 / 0.08), 0 12px 28px oklch(0.2 0.04 258 / 0.08);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  --background: oklch(0.976 0.003 250);
+  --foreground: oklch(0.24 0.03 258);
+  --surface: oklch(0.995 0.001 250);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.03 258);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.03 258);
+
+  --primary: oklch(0.48 0.14 253);
+  --primary-foreground: oklch(0.99 0.002 250);
+  --secondary: oklch(0.955 0.006 250);
+  --secondary-foreground: oklch(0.3 0.03 258);
+  --muted: oklch(0.958 0.005 250);
+  --muted-foreground: oklch(0.52 0.02 256);
+  --accent: oklch(0.945 0.012 250);
+  --accent-foreground: oklch(0.28 0.03 258);
+  --destructive: oklch(0.55 0.2 27);
+  --destructive-foreground: oklch(0.99 0.002 250);
+
+  --border: oklch(0.905 0.008 252);
+  --input: oklch(0.905 0.008 252);
+  --ring: oklch(0.55 0.12 253);
+
+  --fl: oklch(0.5 0.15 253);
+  --fl-foreground: oklch(0.99 0.002 250);
+  --fl-soft: oklch(0.955 0.03 253);
+  --otrace: oklch(0.63 0.16 55);
+  --otrace-foreground: oklch(0.99 0.002 250);
+  --otrace-soft: oklch(0.96 0.04 70);
+  --verified: oklch(0.52 0.13 158);
+  --verified-foreground: oklch(0.99 0.002 250);
+  --verified-soft: oklch(0.955 0.04 160);
+
+  --chart-1: oklch(0.5 0.15 253);
+  --chart-2: oklch(0.63 0.16 55);
+  --chart-3: oklch(0.52 0.13 158);
+  --chart-4: oklch(0.55 0.09 285);
+  --chart-5: oklch(0.6 0.02 256);
+
+  --sidebar: oklch(0.245 0.045 258);
+  --sidebar-foreground: oklch(0.9 0.012 252);
+  --sidebar-primary: oklch(0.62 0.14 253);
+  --sidebar-primary-foreground: oklch(0.99 0.002 250);
+  --sidebar-accent: oklch(0.305 0.05 258);
+  --sidebar-accent-foreground: oklch(0.97 0.005 250);
+  --sidebar-border: oklch(0.33 0.045 258);
+  --sidebar-ring: oklch(0.62 0.14 253);
+}
+
+.dark {
+  --background: oklch(0.19 0.035 258);
+  --foreground: oklch(0.95 0.005 250);
+  --surface: oklch(0.23 0.038 258);
+  --card: oklch(0.235 0.038 258);
+  --card-foreground: oklch(0.95 0.005 250);
+  --popover: oklch(0.235 0.038 258);
+  --popover-foreground: oklch(0.95 0.005 250);
+  --primary: oklch(0.66 0.14 253);
+  --primary-foreground: oklch(0.18 0.03 258);
+  --secondary: oklch(0.3 0.04 258);
+  --secondary-foreground: oklch(0.95 0.005 250);
+  --muted: oklch(0.3 0.04 258);
+  --muted-foreground: oklch(0.72 0.02 254);
+  --accent: oklch(0.32 0.045 258);
+  --accent-foreground: oklch(0.96 0.005 250);
+  --destructive: oklch(0.65 0.19 25);
+  --destructive-foreground: oklch(0.98 0.002 250);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.66 0.14 253);
+  --fl-soft: oklch(0.3 0.05 253);
+  --otrace-soft: oklch(0.32 0.05 60);
+  --verified-soft: oklch(0.3 0.05 158);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "cv02", "cv03", "tnum" 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.011em;
+  }
+}
+
+@utility panel {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- restrained motion -------------------------------------------------- */
+
+@keyframes otf-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility fade-up {
+  animation: otf-fade-up 0.45s ease-out both;
+}
+
+@utility lift {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
