@@ -6,7 +6,6 @@ import {
   Settings2,
   Lock,
   Play,
-  Info,
   Trash2,
   ClipboardCheck,
   Users,
@@ -19,17 +18,13 @@ import {
   Search,
   RefreshCcw,
   Repeat,
-  ChevronRight,
-  ChevronDown,
   Loader2,
   CheckCircle2,
   AlertTriangle,
   Circle,
 } from "lucide-react";
 import { useSummary } from "@/hooks/useSummary";
-import { SUMMARY_ENDPOINT } from "@/lib/api";
 import {
-  RUN_ENDPOINT,
   runExperiment,
   RunEndpointUnavailableError,
   type RunState,
@@ -67,7 +62,6 @@ function pct(value: number) { return value <= 1 ? value * 100 : value; }
 
 function ExperimentPage() {
   const { data, isLive, canRun } = useSummary();
-  const [showIntegration, setShowIntegration] = useState(false);
   const [consentSample, setConsentSample] = useState("60");
   const [seed, setSeed] = useState("42");
   const [runState, setRunState] = useState<RunState>({ phase: "idle" });
@@ -76,7 +70,7 @@ function ExperimentPage() {
 
   const runMutation = useMutation({
     mutationFn: async () => {
-      const body: { consent_sample?: number; seed?: number } = {};
+      const body: { Consent sample?: number; seed?: number } = {};
       const cs = Number(consentSample);
       const sd = Number(seed);
       if (consentSample.trim() !== "" && Number.isFinite(cs)) body.consent_sample = cs;
@@ -179,19 +173,6 @@ function ExperimentPage() {
               {isBusy ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
               Run Experiment
             </button>
-            <p className="mt-2 max-w-xs text-[12.5px] leading-relaxed text-muted-foreground">
-              {canRun ? (
-                <>
-                  Runs <code className="font-mono">run_experiment()</code> on the backend via{" "}
-                  <code className="font-mono">POST /ui/api/experiment/run</code>.
-                </>
-              ) : (
-                <>
-                  Backend does not advertise run capability. Runs are started from{" "}
-                  <code className="font-mono">run_traced_experiment.py</code>.
-                </>
-              )}
-            </p>
           </div>
         </div>
 
@@ -199,44 +180,6 @@ function ExperimentPage() {
           <RunStateArea state={runState} />
         </div>
 
-
-        <div className="mt-5 border-t border-border pt-4">
-          <button
-            type="button"
-            onClick={() => setShowIntegration((v) => !v)}
-            className="inline-flex items-center gap-2 text-[13.5px] font-medium text-foreground transition-colors hover:text-otrace"
-            aria-expanded={showIntegration}
-          >
-            {showIntegration ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-            Backend Integration
-          </button>
-
-          {showIntegration ? (
-            <div className="mt-3 rounded-md border border-border bg-secondary/40 px-4 py-3">
-              <DataRow label="Summary endpoint" value={SUMMARY_ENDPOINT} mono />
-              <DataRow
-                label="Status"
-                value={isLive ? "Reachable — rendering live data" : "Unreachable — rendering verified fallback"}
-              />
-              <DataRow label="Run endpoint" value={RUN_ENDPOINT} mono />
-              <DataRow
-                label="Run capability"
-                value={canRun ? "Advertised by backend — runs enabled" : "Not advertised — runs disabled"}
-              />
-              <div className="mt-3 flex items-start gap-3 text-[13px] leading-relaxed text-muted-foreground">
-                <Info className="mt-0.5 size-4 shrink-0" />
-                <span>
-                  A run is executed by the FastAPI service, which must call the existing{" "}
-                  <code className="font-mono">run_experiment(consent_sample, seed)</code> in{" "}
-                  <code className="font-mono">run_traced_experiment.py</code>. When a run completes, this UI refetches
-                  the summary endpoint; no result is ever produced in the frontend. Contract:{" "}
-                  <code className="font-mono">docs/FASTAPI_RUN_ENDPOINT.md</code>. Point the UI at a local FastAPI host
-                  with <code className="font-mono">VITE_OTRACE_API_BASE</code>.
-                </span>
-              </div>
-            </div>
-          ) : null}
-        </div>
       </Panel>
 
 
@@ -451,14 +394,14 @@ function RunStateArea({ state }: { state: RunState }) {
         return {
           icon: <Circle className="size-4 text-muted-foreground" />,
           label: "Idle",
-          detail: "No run started from this interface.",
+          detail: "Ready to run.",
           tone: "border-border bg-secondary/40 text-muted-foreground",
         };
       case "starting":
         return {
           icon: <Loader2 className="size-4 animate-spin text-fl" />,
           label: "Starting",
-          detail: "Sending the run request to the backend.",
+          detail: "Starting experiment.",
           tone: "border-fl/25 bg-fl-soft text-fl",
         };
       case "running":
@@ -466,7 +409,7 @@ function RunStateArea({ state }: { state: RunState }) {
           icon: <Loader2 className="size-4 animate-spin text-fl" />,
           label: "Running",
           detail:
-            "Backend is executing run_experiment(). Progress is not reported by the API contract; awaiting completion.",
+            "Experiment is running.",
           tone: "border-fl/25 bg-fl-soft text-fl",
         };
       case "completed":
@@ -475,7 +418,7 @@ function RunStateArea({ state }: { state: RunState }) {
           label: "Completed",
           detail: `Run reported complete by the backend${
             state.result.duration_sec !== undefined ? ` in ${state.result.duration_sec} sec` : ""
-          }. Summary refetched from /ui/api/summary.`,
+          }.`,
           tone: "border-verified/30 bg-verified-soft text-verified",
         };
       case "failed":
@@ -483,7 +426,7 @@ function RunStateArea({ state }: { state: RunState }) {
           icon: <AlertTriangle className="size-4 text-otrace" />,
           label: state.unavailable ? "Run endpoint unavailable" : "Failed",
           detail: state.unavailable
-            ? "POST /ui/api/experiment/run is not available. The verified fallback data shown below is unchanged and is not a run result."
+            ? "Experiment runner is unavailable."
             : state.error,
           tone: "border-otrace/30 bg-otrace-soft text-otrace",
         };
