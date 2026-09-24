@@ -23,6 +23,8 @@ export const Route = createFileRoute("/federated-learning")({
   component: FederatedLearningPage,
 });
 
+function pct(value: number) { return value <= 1 ? value * 100 : value; }
+
 function FederatedLearningPage() {
   const { data } = useSummary();
   const { federated, dataset, metrics } = data;
@@ -35,10 +37,10 @@ function FederatedLearningPage() {
       />
 
       <div className="mb-7 grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <StatCard label="Clients" value={String(federated.clients)} accent="fl" icon={<Users className="size-4" />} />
+        <StatCard label="Hospital Groups" value={String(federated.clients)} accent="fl" icon={<Users className="size-4" />} />
         <StatCard label="Hospitals" value={String(dataset.hospitals)} accent="fl" icon={<Building2 className="size-4" />} />
         <StatCard label="Rounds" value={String(federated.rounds)} accent="fl" icon={<Repeat className="size-4" />} />
-        <StatCard label="Accuracy" value={`${metrics.accuracy}%`} accent="verified" icon={<Target className="size-4" />} />
+        <StatCard label="Accuracy" value={`${pct(metrics.accuracy).toFixed(2)}%`} accent="verified" icon={<Target className="size-4" />} />
       </div>
 
       <Panel
@@ -66,7 +68,7 @@ function FederatedLearningPage() {
         <Panel title="Completed Rounds" accent="fl" icon={<Repeat className="size-4" />}>
           <RoundTrack
             rounds={federated.rounds}
-            note="Round-level completion markers only. Per-round accuracy was not recorded in this run, so no learning curve is shown."
+            note="10/10 rounds completed. A learning curve will be shown when per-round metrics are recorded."
           />
         </Panel>
 
@@ -115,19 +117,19 @@ function FederatedLearningPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <MetricRadar
               metrics={[
-                { label: "Acc", value: metrics.accuracy },
-                { label: "AUC", value: metrics.auc },
-                { label: "Prec", value: metrics.precision },
-                { label: "Rec", value: metrics.recall },
-                { label: "F1", value: metrics.f1 },
+                { label: "Acc", value: pct(metrics.accuracy) },
+                { label: "AUC", value: pct(metrics.auc) },
+                { label: "Prec", value: pct(metrics.precision) },
+                { label: "Rec", value: pct(metrics.recall) },
+                { label: "F1", value: pct(metrics.f1) },
               ]}
             />
             <div>
-              <MetricBar label="Accuracy" value={metrics.accuracy} display={`${metrics.accuracy}%`} accent="verified" />
-              <MetricBar label="AUC" value={metrics.auc} display={`${metrics.auc}%`} accent="verified" />
-              <MetricBar label="F1" value={metrics.f1} display={`${metrics.f1.toFixed(1)}%`} accent="fl" />
-              <MetricBar label="Precision" value={metrics.precision} display={`${metrics.precision.toFixed(1)}%`} accent="fl" />
-              <MetricBar label="Recall" value={metrics.recall} display={`${metrics.recall.toFixed(1)}%`} accent="fl" />
+              <MetricBar label="Accuracy" value={pct(metrics.accuracy)} display={`${pct(metrics.accuracy).toFixed(2)}%`} accent="verified" />
+              <MetricBar label="AUC" value={pct(metrics.auc)} display={`${pct(metrics.auc).toFixed(2)}%`} accent="verified" />
+              <MetricBar label="F1" value={pct(metrics.f1)} display={`${pct(metrics.f1).toFixed(2)}%`} accent="fl" />
+              <MetricBar label="Precision" value={pct(metrics.precision)} display={`${pct(metrics.precision).toFixed(2)}%`} accent="fl" />
+              <MetricBar label="Recall" value={pct(metrics.recall)} display={`${pct(metrics.recall).toFixed(2)}%`} accent="fl" />
             </div>
           </div>
           <p className="mt-4 text-[13.5px] leading-relaxed text-muted-foreground">
