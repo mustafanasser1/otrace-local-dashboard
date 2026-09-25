@@ -13,7 +13,12 @@ ROOT=Path(__file__).resolve().parent
 def find_pipeline():
     env=os.getenv("OTRACE_FL_PIPELINE")
     candidates=[Path(env)] if env else []
-    candidates += [ROOT.parent/"otrace-fl-prototype"/"otrace-fl-prototype"/"fl-pipeline",ROOT.parent/"fl-pipeline"]
+    candidates += [
+        ROOT.parent/"fl-pipeline",
+        ROOT.parent/"otrace-fl-prototype"/"fl-pipeline",
+        ROOT.parent/"otrace-fl-prototype"/"otrace-fl-prototype"/"fl-pipeline",
+        ROOT.parent.parent/"fl-pipeline",
+    ]
     for p in candidates:
         if p and (p/"run_traced_experiment.py").exists(): return p.resolve()
     return None
