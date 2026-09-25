@@ -130,7 +130,7 @@ function ExperimentPage() {
           <div className="text-right">
             <div className="mb-2 flex items-center justify-end gap-2">
               <label className="text-[12.5px] text-muted-foreground" htmlFor="consent-sample">
-                consent_sample
+                Consent sample
               </label>
               <input
                 id="consent-sample"
@@ -142,7 +142,7 @@ function ExperimentPage() {
                 className="num w-20 rounded-md border border-border bg-card px-2 py-1 text-right text-[13px] text-foreground disabled:opacity-60"
               />
               <label className="text-[12.5px] text-muted-foreground" htmlFor="run-seed">
-                seed
+                Random seed
               </label>
               <input
                 id="run-seed"
