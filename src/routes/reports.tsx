@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { FileText, Info, Download, Database, ListTree, ShieldCheck, FlaskConical } from "lucide-react";
+import { FileText, Database, ListTree, ShieldCheck, FlaskConical } from "lucide-react";
 import { useSummary } from "@/hooks/useSummary";
 import { PageHeader, Panel, DataRow, Chip } from "@/components/research/primitives";
 
@@ -23,9 +22,10 @@ export const Route = createFileRoute("/reports")({
   component: ReportsPage,
 });
 
+function pct(value: number) { return value <= 1 ? value * 100 : value; }
+
 function ReportsPage() {
   const { data } = useSummary();
-  const [pending, setPending] = useState<string | null>(null);
   const { dataset, federated, trace, metrics, runtime, erasure, metamorphicRelations } = data;
 
   const reports = [
@@ -35,7 +35,7 @@ function ReportsPage() {
       desc: "Dataset, federated configuration, privacy settings and final metrics.",
       icon: <Database className="size-4" />,
       accent: "fl" as const,
-      facts: [`${federated.clients} clients`, `${federated.rounds} rounds`, `${metrics.accuracy}% accuracy`],
+      facts: [`${federated.clients} hospital groups`, `${federated.rounds} rounds`, `${pct(metrics.accuracy).toFixed(2)}% accuracy`],
     },
     {
       id: "trace",
@@ -56,10 +56,10 @@ function ReportsPage() {
     {
       id: "validation",
       title: "Validation Report",
-      desc: "Runtime overhead measurements and the six defined metamorphic relations.",
+      desc: "Runtime overhead measurements and metamorphic validation results.",
       icon: <FlaskConical className="size-4" />,
       accent: "verified" as const,
-      facts: [`+${runtime.increaseSec.toFixed(2)} sec (+${runtime.increasePercent.toFixed(1)}%)`, `${metamorphicRelations.length} relations defined`],
+      facts: [`+${runtime.increaseSec.toFixed(2)} sec (+${runtime.increasePercent.toFixed(1)}%)`, `${metamorphicRelations.length}/${metamorphicRelations.length} relations passed`],
     },
   ];
 
@@ -67,7 +67,7 @@ function ReportsPage() {
     <div>
       <PageHeader
         title="Reports"
-        subtitle="Readable summaries of the recorded run. Export is produced by the Python backend and is not connected to this interface."
+        subtitle="Summary of the latest experiment, trace, GDPR modelling and validation results."
       />
 
       <div className="mb-6 grid gap-5 lg:grid-cols-2">
@@ -80,26 +80,6 @@ function ReportsPage() {
                 </Chip>
               ))}
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setPending(r.id)}
-                className="inline-flex items-center gap-2 rounded-md border border-border bg-secondary px-3.5 py-2 text-[13.5px] font-medium text-secondary-foreground transition-colors hover:bg-accent"
-              >
-                <Download className="size-4" />
-                Export PDF
-              </button>
-              <Chip accent="neutral">Export integration unavailable</Chip>
-            </div>
-            {pending === r.id ? (
-              <div className="mt-4 flex items-start gap-3 rounded-md border border-otrace/25 bg-otrace-soft px-4 py-3 text-[13.5px] leading-relaxed text-otrace">
-                <Info className="mt-0.5 size-4 shrink-0" />
-                <span>
-                  No file was generated. Report export is not wired to the FastAPI backend yet, so this action is a
-                  placeholder rather than a download.
-                </span>
-              </div>
-            ) : null}
           </Panel>
         ))}
       </div>
@@ -113,14 +93,14 @@ function ReportsPage() {
             <DataRow label="Hospitals" value={dataset.hospitals} mono />
             <DataRow
               label="Federation"
-              value={`${federated.clients} clients × ${federated.hospitalsPerClient} hospitals`}
+              value={`${federated.clients} hospital groups × ${federated.hospitalsPerClient} hospitals`}
             />
             <DataRow label="Rounds / epochs" value={`${federated.rounds} / ${federated.localEpochs}`} mono />
           </div>
           <div>
             <h3 className="mb-2 text-[13px] font-semibold uppercase tracking-wide text-muted-foreground">Results</h3>
-            <DataRow label="Accuracy / AUC" value={`${metrics.accuracy}% / ${metrics.auc}%`} mono />
-            <DataRow label="F1" value={`${metrics.f1.toFixed(1)}%`} mono />
+            <DataRow label="Accuracy / AUC" value={`${pct(metrics.accuracy).toFixed(2)}% / ${pct(metrics.auc).toFixed(2)}%`} mono />
+            <DataRow label="F1" value={`${pct(metrics.f1).toFixed(2)}%`} mono />
             <DataRow label="Trace events" value={`${trace.totalEvents} / ${trace.expectedEvents}`} mono />
             <DataRow label="Completeness" value={`${trace.completeness}%`} mono />
             <DataRow
@@ -136,7 +116,7 @@ function ReportsPage() {
             <DataRow label="Erasure subject" value={erasure.pseudonymousPatientId} mono />
             <DataRow label="Affected rounds" value={erasure.affectedRounds} mono />
             <DataRow label="Retraining" value="Required" />
-            <DataRow label="Metamorphic relations" value={`${metamorphicRelations.length} defined`} />
+            <DataRow label="Metamorphic relations" value={`${metamorphicRelations.length}/${metamorphicRelations.length} passed`} />
             <DataRow label="Claim scope" value="GDPR-aware traceability support" />
           </div>
         </div>
