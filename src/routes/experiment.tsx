@@ -70,7 +70,7 @@ function ExperimentPage() {
 
   const runMutation = useMutation({
     mutationFn: async () => {
-      const body: { Consent sample?: number; seed?: number } = {};
+      const body: { consent_sample?: number; seed?: number } = {};
       const cs = Number(consentSample);
       const sd = Number(seed);
       if (consentSample.trim() !== "" && Number.isFinite(cs)) body.consent_sample = cs;
