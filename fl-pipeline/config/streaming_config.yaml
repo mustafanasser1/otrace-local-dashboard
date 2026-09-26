@@ -1,0 +1,8 @@
+# Streamed producer/consumer pipeline (Kafka).
+# Start the broker first: docker compose up -d   (from fl-pipeline/)
+streaming:
+  bootstrap_servers: 127.0.0.1:9092
+  topic_prefix: fl-lifecycle
+  # How long a consumer waits for further messages before concluding
+  # the stream is drained.
+  consumer_timeout_ms: 5000

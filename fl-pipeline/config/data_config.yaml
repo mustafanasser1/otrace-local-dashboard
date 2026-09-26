@@ -1,0 +1,86 @@
+# Data pipeline configuration for the eICU sepsis prediction cohort.
+# All preprocessing modules read from this file - no hardcoded values.
+
+data:
+  # Relative to the fl-pipeline directory.
+  raw_dir: data/eicu-demo
+
+cohort:
+  # Minimum ICU unit stay, in minutes (spec: >=24 hours of data).
+  min_unit_stay_minutes: 1440
+
+labels:
+  # A stay is sepsis-positive when any of its diagnosis strings contains
+  # one of these patterns (case-insensitive). "septic shock" rather than
+  # bare "septic" deliberately excludes septic arthritis (localised joint
+  # infection, not sepsis). Pragmatic simplification of Sepsis-3 for the
+  # demo dataset - documented in dev journal.
+  sepsis_patterns:
+    - sepsis
+    - septic shock
+
+features:
+  # Vital sign columns in vitalPeriodic, aggregated with the statistics
+  # below over each stay's observation window.
+  vitals:
+    - heartrate
+    - systemicsystolic
+    - systemicdiastolic
+    - temperature
+    - respiration
+    - sao2
+  vital_statistics: [min, max, mean, last]
+
+  # Non-invasive blood pressure lives in vitalAperiodic, not
+  # vitalPeriodic. Coverage 95.9% of the cohort against 20.1% for the
+  # invasive systemic columns above, which are only present when an
+  # arterial line is fitted (verified 2026-07-31).
+  aperiodic_vitals:
+    - noninvasivesystolic
+    - noninvasivediastolic
+    - noninvasivemean
+
+  # APACHE physiology: one worst-value record per stay. Supplies the
+  # severity variables the spec asks for and rescues temperature, which
+  # vitalPeriodic records for only 8.7% of stays against 85.9% here.
+  # APACHE encodes "not measured" as -1, mapped to NaN on load.
+  apache_variables:
+    - temperature
+    - respiratoryrate
+    - heartrate
+    - meanbp
+    - wbc
+    - creatinine
+    - bilirubin
+    - bun
+  apache_missing_sentinel: -1
+
+  # Laboratory tests, keyed by the exact `labname` values present in the
+  # eICU demo lab table (verified 2026-07-31).
+  labs:
+    wbc: WBC x 1000
+    lactate: lactate
+    creatinine: creatinine
+    bilirubin: total bilirubin
+    platelets: platelets x 1000
+    bun: BUN
+  lab_statistics: [min, max, last]
+
+  # Demographic columns taken from the patient table.
+  demographics: [age, gender, admissionweight, unittype]
+
+  # eICU records ages above 89 as the string "> 89" for de-identification.
+  age_over_89_value: 90
+
+partitioning:
+  # The eICU demo spreads 1627 cohort stays over 186 hospitals, the
+  # largest holding just 21 - too small to be FL clients individually.
+  # Hospitals are therefore grouped into balanced consortia, each acting
+  # as one federated client. Grouping is by hospital, never by patient,
+  # so the "hospital is a joint controller" story stays intact.
+  num_groups: 3
+  # Fraction of each group's patients held out for evaluation.
+  test_fraction: 0.2
+  # Fixed seed: partitions and splits must be identical across runs for
+  # the experiment to be reproducible.
+  random_seed: 42

@@ -1,0 +1,13 @@
+# OTrace service configuration.
+# Every value here can be overridden by an environment variable, which
+# is how the test suite points the service at a throwaway database.
+
+service:
+  # OTRACE_HOST / OTRACE_PORT
+  host: 127.0.0.1
+  port: 8080
+
+database:
+  # OTRACE_DB_PATH. Relative paths resolve against the service directory,
+  # so the working directory does not change which database is used.
+  path: otrace.db

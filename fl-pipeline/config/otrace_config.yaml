@@ -1,0 +1,51 @@
+# OTrace integration configuration.
+# The FL pipeline talks to the OTrace service over REST on localhost.
+
+service:
+  base_url: http://127.0.0.1:8080
+  timeout_seconds: 10
+
+# GDPR role assignment for the sepsis scenario. Hospitals decide jointly
+# why and how the data is processed (Art. 26 joint controllers); the
+# aggregation server only processes updates on their instructions
+# (Art. 28 processor); the deployer controls the served model.
+#
+# The extended OTrace service accepts joint_controller and processor as
+# native Party.data_controller values (upstream permits only consumer /
+# data_provider / data_recipient - the documented role gap). The true
+# GDPR role still travels in the attestation payload so a trace remains
+# self-describing. The deployer keeps "consumer": upstream has no plain
+# "controller" value and the extension deliberately adds only the two
+# roles the FL scenario cannot do without.
+roles:
+  hospital:
+    otrace_data_controller: joint_controller
+    gdpr_role: joint_controller
+    gdpr_article: "Article 26"
+  aggregation_server:
+    otrace_data_controller: processor
+    gdpr_role: processor
+    gdpr_article: "Article 28"
+  model_deployer:
+    otrace_data_controller: consumer
+    gdpr_role: controller
+    gdpr_article: "Article 24"
+
+# Processing context attached to every training event.
+processing:
+  operator_name: sepsis-fl-consortium
+  purpose: "Training a sepsis prediction model by federated learning"
+  legal_basis: consent
+  data_description: "ICU vital signs, laboratory results and demographics"
+  retention_period: "Model updates retained for the duration of the study"
+  consent_expiry: "2027-12-31T00:00:00"
+
+# The extended OTrace service carries the four FL lifecycle events as
+# first-class Action_Type values. (Upstream OTrace has none - the
+# documented enum gap - which forced every event under "data use" with
+# its real name buried in action.information.)
+event_action_types:
+  LocalTrainingEvent: local training
+  UpdateSubmissionEvent: update submission
+  AggregationEvent: aggregation
+  DeploymentEvent: deployment

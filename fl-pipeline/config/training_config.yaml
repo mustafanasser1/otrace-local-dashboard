@@ -1,0 +1,33 @@
+fl:
+  num_clients: 3
+  num_rounds: 10
+  fraction_fit: 1.0
+  fraction_evaluate: 1.0
+
+# Pairwise additive masking (Bonawitz-style, prototype level). The
+# base_seed stands in for pairwise key agreement; see
+# training/secure_aggregation.py for the two documented simplifications.
+secure_aggregation:
+  enabled: true
+  base_seed: 20260804
+
+local_training:
+  epochs_per_round: 3
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: adam
+
+model:
+  type: simple_nn
+  hidden_layers: [64, 32]
+
+evaluation:
+  metrics: [accuracy, auc, f1, precision, recall]
+
+# Differential privacy on released metrics/queries (the plan's scope
+# for DP in this prototype - training itself is not privatized).
+# Every released metric costs epsilon_per_query; sequential composition
+# is tracked and reported. See training/dp_metrics.py.
+differential_privacy:
+  enabled: true
+  epsilon_per_query: 1.0

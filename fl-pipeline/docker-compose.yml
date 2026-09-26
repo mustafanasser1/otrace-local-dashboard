@@ -1,0 +1,26 @@
+# Kafka broker for the streamed producer/consumer experiment pipeline.
+# Single node in KRaft mode (no ZooKeeper), which is the standard
+# single-machine development setup for current Kafka.
+#
+#   docker compose up -d      # start the broker
+#   docker compose down -v    # stop it and discard stored events
+#
+# The pipeline's clients connect to 127.0.0.1:9092 (see
+# config/streaming_config.yaml).
+services:
+  kafka:
+    image: apache/kafka:3.8.1
+    container_name: otrace-fl-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
